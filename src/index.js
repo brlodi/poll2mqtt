@@ -8,6 +8,15 @@ import fetch from 'node-fetch';
 import yargs from 'yargs';
 import { hideBin } from 'yargs/helpers';
 
+function loadConfigYaml(path) {
+  try {
+    return load(readFileSync(resolve(path), { encoding: 'utf-8' }));
+  } catch (error) {
+    console.error(`Failed to read configuration file at '${resolve(path)}'.`);
+    return undefined;
+  }
+}
+
 function buildUrl(urls, params) {
   const url = urls.reduce((acc, cur) => new URL(cur, acc));
   url.search = new URLSearchParams(merge({}, ...params)).toString();
@@ -56,9 +65,7 @@ async function poll(client, url, topics) {
 
 let yargsParser = yargs(hideBin(process.argv))
   .env('HTTP2MQTT') // Also read environment vars starting with 'HTTP2MQTT_'
-  .config('config', (path) =>
-    load(readFileSync(resolve(path), { encoding: 'utf-8' }))
-  )
+  .config('config', loadConfigYaml)
   .option('min-interval', {
     coerce: (v) => max([1, v]), // Under no circumstances poll at > 1Hz
     default: 10,
@@ -83,13 +90,18 @@ let yargsParser = yargs(hideBin(process.argv))
 
 // Load default config file if none passed
 if (!yargsParser.argv.config) {
-  yargsParser = yargsParser.config(
-    load(readFileSync(resolve('config.yaml'), { encoding: 'utf-8' }))
-  );
+  yargsParser = yargsParser.config(loadConfigYaml('config.yaml'));
 }
 
 const config = yargsParser.argv;
-const mqttClient = await mqtt.connectAsync(config.mqtt);
+
+let mqttClient;
+try {
+  mqttClient = await mqtt.connectAsync(config.mqtt);
+} catch (error) {
+  console.error(error);
+  process.exit(111);
+}
 
 let requestCounter = 0;
 for (const service of config.services) {
