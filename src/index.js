@@ -1,18 +1,22 @@
 import { randomBytes } from 'crypto';
 import { readFileSync } from 'fs';
+import { inspect } from 'util';
 import { resolve } from 'path';
 import mqtt from 'async-mqtt';
 import { load } from 'js-yaml';
 import { has, get, max, merge } from 'lodash-es';
 import fetch from 'node-fetch';
+import pino from 'pino';
 import yargs from 'yargs';
 import { hideBin } from 'yargs/helpers';
+
+const logger = pino({ level: process.env.LOG_LEVEL || 'info' });
 
 function loadConfigYaml(path) {
   try {
     return load(readFileSync(resolve(path), { encoding: 'utf-8' }));
   } catch (error) {
-    console.error(`Failed to read configuration file at '${resolve(path)}'.`);
+    logger.error('Failed to read configuration file at %s.', resolve(path));
     return undefined;
   }
 }
@@ -24,42 +28,48 @@ function buildUrl(urls, params) {
 }
 
 async function fetchJson(url) {
-  const response = await fetch(url);
-  if (response.status < 200 || response.status >= 400) {
-    console.error(
-      `Error polling ${url}. The endpoint responded with ${response.status} - ${response.statusText}`
-    );
+  let response;
+  try {
+    response = await fetch(url);
+  } catch (error) {
+    logger.error(error);
     return undefined;
   }
-  const json = await response.json();
-  if (!json) {
-    console.error(
-      `Error polling ${url}. The endpoint returned an invalid response. Are you sure it returns a JSON document?`
-    );
+  if (!response.ok) {
+    logger.error(response);
     return undefined;
   }
-  return json;
+
+  try {
+    return await response.json();
+  } catch (error) {
+    logger.error(error);
+    return undefined;
+  }
 }
 
 async function publish(client, topic, json, path) {
   if (!path) {
-    const payload = JSON.stringify(json);
-    console.debug(`Publishing ${payload} on topic '${topic}'`);
-    return client.publish(topic, payload);
+    logger.debug('Publishing to %s: %o', topic, json);
+    return client.publish(topic, JSON.stringify(json));
   }
 
-  const payload = JSON.stringify(get(json, path));
+  const payload = get(json, path);
   if (!has(json, path)) {
-    console.warn(`${path} not found in response ${payload}`);
+    logger.warn("Path '%s' not found in response: %o", path, payload);
   }
-  console.debug(`Publishing ${payload} on topic '${topic}'`);
-  return client.publish(topic, payload);
+  logger.debug('Publishing to %s: %o', topic, payload);
+  return client.publish(topic, JSON.stringify(payload));
 }
 
 async function poll(client, url, topics) {
-  const response = await fetchJson(url);
+  const json = await fetchJson(url);
+  if (!json) {
+    logger.warn('Failed to fetch %s. Skipping publish.', url);
+    return;
+  }
   for (const { topic, path } of topics) {
-    publish(client, topic, response, path);
+    publish(client, topic, json, path);
   }
 }
 
@@ -94,19 +104,22 @@ if (!yargsParser.argv.config) {
 }
 
 const config = yargsParser.argv;
+logger.debug(
+  'Using configuration: %s',
+  inspect(config, { depth: Infinity, colors: true })
+);
+yargsParser = null;
 
 let mqttClient;
 try {
   mqttClient = await mqtt.connectAsync(config.mqtt);
 } catch (error) {
-  console.error(error);
+  logger.error(error);
   process.exit(111);
 }
 
-let requestCounter = 0;
 for (const service of config.services) {
   for (const endpoint of service.endpoints) {
-    requestCounter += 1;
     const url = buildUrl(
       [service.url, endpoint.url],
       [service.query, endpoint.query]
@@ -119,8 +132,7 @@ for (const service of config.services) {
 
     const fn = poll.bind(this, mqttClient, url, topics);
 
-    // Stagger initial call
-    setTimeout(fn, 10 * requestCounter);
+    fn();
     setInterval(fn, interval * 1000);
   }
 }
