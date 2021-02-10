@@ -74,7 +74,7 @@ async function poll(client, url, topics) {
 }
 
 let yargsParser = yargs(hideBin(process.argv))
-  .env('HTTP2MQTT') // Also read environment vars starting with 'HTTP2MQTT_'
+  .env('POLL2MQTT') // Also read environment vars starting with 'POLL2MQTT_'
   .config('config', loadConfigYaml)
   .option('min-interval', {
     coerce: (v) => max([1, v]), // Under no circumstances poll at > 1Hz
@@ -95,7 +95,7 @@ let yargsParser = yargs(hideBin(process.argv))
     type: 'number',
   })
   .option('user-agent', {
-    default: `http2mqtt-${randomBytes(8).toString('hex')}`,
+    default: `poll2mqtt-${randomBytes(8).toString('hex')}`,
   });
 
 // Load default config file if none passed
