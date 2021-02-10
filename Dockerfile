@@ -6,4 +6,4 @@ RUN yarn install --production; yarn cache clean
 COPY src/ src/
 
 USER node
-ENTRYPOINT ["node", "src/index.js"]
+ENTRYPOINT ["/bin/sh", "-c", "node src/index.js | ./node_modules/.bin/pino-dev -t \"yyyy-MM-dd HH:mm:ss.SSSXX\""]
