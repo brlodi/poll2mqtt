@@ -4,6 +4,7 @@
   "description": "Lightweight microservice to fetch data from HTTP APIs and dump it onto an MQTT broker",
   "type": "module",
   "main": "src/index.js",
+  "bin": "src/index.js",
   "author": "Benjamin Lodi",
   "license": "MIT",
   "engines": {

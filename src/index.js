@@ -1,3 +1,5 @@
+#!/usr/bin/env node
+
 import { randomBytes } from 'crypto';
 import { readFileSync } from 'fs';
 import { inspect } from 'util';
