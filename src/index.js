@@ -132,6 +132,13 @@ for (const service of config.services) {
 
     const fn = poll.bind(this, mqttClient, url, topics);
 
+    logger.info(
+      'Polling %s every %ds and publishing to %o',
+      url,
+      interval,
+      topics.map((t) => t.topic).join(', ')
+    );
+
     fn();
     setInterval(fn, interval * 1000);
   }
