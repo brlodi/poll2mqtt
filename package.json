@@ -1,6 +1,6 @@
 {
   "name": "poll2mqtt",
-  "version": "0.0.9",
+  "version": "0.1.0-beta.1",
   "description": "Lightweight microservice to fetch data from HTTP APIs and dump it onto an MQTT broker",
   "type": "module",
   "main": "src/index.js",
