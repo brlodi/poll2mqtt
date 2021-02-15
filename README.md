@@ -1,5 +1,7 @@
 # poll2mqtt
 
+![node-current](https://img.shields.io/node/v/poll2mqtt) ![NPM](https://img.shields.io/npm/l/poll2mqtt) ![GitHub release (latest SemVer including pre-releases)](https://img.shields.io/github/v/release/brlodi/poll2mqtt?include_prereleases) ![npm](https://img.shields.io/npm/v/poll2mqtt) ![Docker Image Version (latest semver)](https://img.shields.io/docker/v/brlodi/poll2mqtt?logo=docker&logoColor=white) ![Docker Image Size (latest semver)](https://img.shields.io/docker/image-size/brlodi/poll2mqtt?logo=docker&logoColor=white)
+
 **Lightweight microservice to periodically fetch data from HTTP APIs and dump it onto an MQTT broker.**
 
 Sometimes you just want the data from an HTTP endpoint available in your MQTT broker. Sure you could probably set up the consuming services and devices to directly access the endpoint, but that's a lot of duplicated calls when you already have a pub-sub system up and running. Enter poll2mqtt.
@@ -51,6 +53,24 @@ or
 
 ```sh
 yarn global add poll2mqtt
+```
+
+#### Usage
+
+```
+Options:
+  --help           Show help                                           [boolean]
+  --version        Show version number                                 [boolean]
+  --config         Path to YAML configuration file
+  --min-interval   Minimum allowed interval (in seconds) between polls of a sing
+                   le endpoint                            [number] [default: 10]
+  --mqtt.hostname                                [string] [default: "localhost"]
+  --mqtt.port                                           [number] [default: 1883]
+  --mqtt.username                                                       [string]
+  --mqtt.password                                                       [string]
+  --mqtt.qos                            [number] [choices: 0, 1, 2] [default: 1]
+  --user-agent     User-Agent string to send with requests
+                                   [string] [default: randomly-generated string]
 ```
 
 ## Configuration
