@@ -76,21 +76,26 @@ async function poll(client, url, topics) {
 }
 
 let yargsParser = yargs(hideBin(process.argv))
+  .strictCommands() // Disallow non-explicitly-defined positional commands
   .env('POLL2MQTT') // Also read environment vars starting with 'POLL2MQTT_'
-  .config('config', loadConfigYaml)
+  .config('config', 'Path to YAML configuration file', loadConfigYaml)
   .option('min-interval', {
     coerce: (v) => max([1, v]), // Under no circumstances poll at > 1Hz
     default: 10,
+    description:
+      'Minimum allowed interval (in seconds) between polls of a single endpoint',
     type: 'number',
   })
-  .option('mqtt', {
-    default: {
-      hostname: 'localhost',
-      port: 1883,
-      username: undefined,
-      password: undefined,
-    },
+  .option('mqtt.hostname', {
+    default: 'localhost',
+    type: 'string',
   })
+  .option('mqtt.port', {
+    default: 1883,
+    type: 'number',
+  })
+  .option('mqtt.username', { type: 'string' })
+  .option('mqtt.password', { type: 'string' })
   .option('mqtt.qos', {
     choices: [0, 1, 2],
     default: 1,
@@ -98,6 +103,9 @@ let yargsParser = yargs(hideBin(process.argv))
   })
   .option('user-agent', {
     default: `poll2mqtt-${randomBytes(8).toString('hex')}`,
+    defaultDescription: 'randomly-generated string',
+    description: 'User-Agent string to send with requests',
+    type: 'string',
   });
 
 // Load default config file if none passed
