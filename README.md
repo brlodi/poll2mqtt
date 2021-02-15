@@ -198,13 +198,9 @@ Individual endpoints can override this setting to be polled faster _or_ slower.
 
 An array of endpoints for the given service, in the following format:
 
-<!-- markdownlint-disable-next-line MD024 -->
-
 ##### `name` (optional)
 
 A human-friendly identifier for this endpoint.
-
-<!-- markdownlint-disable-next-line MD024 -->
 
 ##### `url`
 
@@ -222,8 +218,6 @@ services:
       - name: Baz
         url: http://baz.example.com/apiv2 # used as-is
 ```
-
-<!-- markdownlint-disable-next-line MD024 -->
 
 ##### `query`
 
