@@ -15,6 +15,7 @@ function resolveEndpoint(service, endpoint) {
     query: mergeQueryParams(service.query, endpoint.query),
     interval: endpoint.interval || service.interval,
     topics: endpoint.topics || [pick(endpoint, 'topic', 'path')],
+    force: endpoint.force || service.force,
   };
   return result;
 }

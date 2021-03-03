@@ -34,7 +34,8 @@ for (const endpoint of endpoints) {
       endpoint.query,
       endpoint.topics,
       config.mqtt.retain,
-      config.mqtt.qos
+      config.mqtt.qos,
+      endpoint.force
     );
   pollFn();
   setInterval(pollFn, endpoint.interval * 1000);
