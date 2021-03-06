@@ -7,6 +7,24 @@ describe('endpoints', function () {
     beforeEach(async function () {
       this.url = await td.replaceEsm('../src/url.js');
       this.subject = await import('../src/endpoints.js');
+      td.when(
+        this.url.mergeUrls('http://example.com/blog', 'posts/3/comments')
+      ).thenReturn('http://example.com/blog/posts/3/comments');
+      td.when(
+        this.url.mergeUrls('http://example.com/blog', 'categories')
+      ).thenReturn('http://example.com/blog/categories');
+      td.when(
+        this.url.mergeQueryParams(
+          { sort_posts: 'date_desc', foo: 'bar' },
+          { sort: 'top' }
+        )
+      ).thenReturn({ sort_posts: 'date_desc', foo: 'bar', sort: 'top' });
+      td.when(
+        this.url.mergeQueryParams(
+          { sort_posts: 'date_desc', foo: 'bar' },
+          { sort_posts: 'date_asc' }
+        )
+      ).thenReturn({ sort_posts: 'date_asc', foo: 'bar' });
     });
 
     afterEach(function () {
@@ -58,15 +76,6 @@ describe('endpoints', function () {
     });
 
     it('endpoints inherit from parent services', async function () {
-      td.when(
-        this.url.mergeUrls('http://example.com/blog', 'posts/3/comments')
-      ).thenReturn('http://example.com/blog/posts/3/comments');
-      td.when(
-        this.url.mergeQueryParams(
-          { sort_posts: 'date_desc', foo: 'bar' },
-          { sort: 'top' }
-        )
-      ).thenReturn({ sort_posts: 'date_desc', foo: 'bar', sort: 'top' });
       const result = this.subject.flattenServices(testServices);
       expect(result[0]).to.deep.equal({
         name: 'Service A - Single Topic Endpoint',
