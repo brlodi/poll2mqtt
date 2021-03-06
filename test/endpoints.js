@@ -40,6 +40,7 @@ describe('endpoints', function () {
       interval: 120,
       topic: 'blog/posts/3/comments/top_comment',
       path: 'data[0]',
+      force: true,
     };
     const multiTopicEndpoint = {
       name: 'Multi-topic Endpoint',
@@ -71,7 +72,7 @@ describe('endpoints', function () {
       for (const elem of result) {
         expect(elem)
           .to.be.an('object')
-          .that.has.keys('name', 'url', 'query', 'interval', 'topics');
+          .that.has.keys('name', 'url', 'query', 'interval', 'topics', 'force');
       }
     });
 
@@ -88,6 +89,7 @@ describe('endpoints', function () {
             path: 'data[0]',
           },
         ],
+        force: true,
       });
     });
 
