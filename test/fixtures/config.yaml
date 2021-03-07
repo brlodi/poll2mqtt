@@ -1,0 +1,25 @@
+min-interval: 3
+
+mqtt:
+  hostname: mqtt.example.com
+  port: 1884
+  qos: 2
+  username: foo
+  password: secretpasswordshhh
+
+services:
+  - name: Example API
+    url: http://example.com/api
+    interval: 30
+    endpoints:
+      - name: Foo
+        url: foo
+        topic: poll2mqtt/foo
+      - name: Bar
+        url: bar
+        force: true
+        topics:
+          - path: 'data.value'
+            topic: poll2mqtt/bar
+          - path: 'data.last_updated'
+            topic: poll2mqtt/bar/last-update

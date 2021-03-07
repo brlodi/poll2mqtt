@@ -7,7 +7,7 @@ import { logger } from './logger.js';
 import * as mqtt from './mqtt.js';
 import { poll2Topics } from './poll.js';
 
-const config = getConfig();
+const config = await getConfig();
 if (config.printConfig) {
   printObject(config);
   process.exit(0);

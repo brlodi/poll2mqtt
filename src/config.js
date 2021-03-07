@@ -73,12 +73,12 @@ function readConfigFile(path) {
   return readFileSync(resolve(path), 'utf-8');
 }
 
-export function parseConfig(path) {
+function parseConfig(path) {
   return load(readConfigFile(path));
 }
 
-export function getConfig() {
-  let argParser = yargs(hideBin(process.argv))
+export async function getConfig(argv = process.argv) {
+  let argParser = yargs(hideBin(argv))
     .parserConfiguration({
       'strip-aliased': true,
       'strip-dashed': true,

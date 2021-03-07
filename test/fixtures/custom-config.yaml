@@ -1,0 +1,23 @@
+min-interval: 7
+
+mqtt:
+  hostname: example.net
+  port: 1234567
+  qos: 0
+
+services:
+  - name: Example API
+    url: http://example.com/api
+    interval: 10
+    endpoints:
+      - name: Foo
+        url: foo
+        topic: poll2mqtt/foo
+      - name: Bar
+        url: bar
+        force: true
+        topics:
+          - path: 'data.value'
+            topic: poll2mqtt/bar
+          - path: 'data.last_updated'
+            topic: poll2mqtt/bar/last-update
