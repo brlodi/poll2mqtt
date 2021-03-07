@@ -37,10 +37,18 @@ describe('http', function () {
     });
 
     it('throws a system error on network issue', async function () {
+      // Github doesn't allow outbound connections except to specific services,
+      // so it returns EAI_AGAIN when running on their CI infrastructure even
+      // though per the DNS spec querying `*.invalid.` *must* return NXDOMAIN.
+      // Either way works for our purposes, though, we just need to account for
+      // it here:
+      const expectedDnsError = process.env.GITHUB_ACTIONS
+        ? 'EAI_AGAIN'
+        : 'ENOTFOUND';
       return Promise.all([
         expect(
           getJson(`http://${INVALID_DOMAIN}`)
-        ).to.be.rejected.and.eventually.have.property('code', 'ENOTFOUND'),
+        ).to.be.rejected.and.eventually.have.property('code', expectedDnsError),
         expect(
           getJson(`http://localhost:${RESERVED_PORT}`)
         ).to.be.rejected.and.eventually.have.property('code', 'ECONNREFUSED'),
