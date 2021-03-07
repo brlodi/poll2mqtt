@@ -2,7 +2,7 @@ node_modules/
 config.yaml
 config.yml
 config.json
-!test/fixtures/config.yaml
+!test/fixtures/*
 .eslintcache
 db.json
 .nyc_output
