@@ -13,8 +13,13 @@
   },
   "scripts": {
     "node-version": "node -v",
-    "start": "node src/index.js | pino-dev -t \"yyyy-MM-dd HH:mm:ss.SSSXX\"",
-    "lint": "eslint **/*.js"
+    "start": "node src/index.js | pino-dev -t \"yyyy-MM-dd HH:mm:ss\"",
+    "start-debug": "LOG_LEVEL=debug yarn start",
+    "lint": "eslint **/*.js",
+    "test": "NODE_ENV=test mocha --loader=testdouble",
+    "test-ci": "yarn coverage && yarn codecov-upload",
+    "coverage": "c8 yarn test",
+    "codecov-upload": "c8 report --reporter=text-lcov > coverage/tests.lcov && codecov"
   },
   "dependencies": {
     "async-mqtt": "^2.6.1",
@@ -29,13 +34,20 @@
     "@babel/core": "^7.12.13",
     "@babel/eslint-parser": "^7.12.13",
     "@babel/plugin-syntax-top-level-await": "^7.12.13",
+    "c8": "^7.6.0",
+    "chai": "^4.3.0",
+    "chai-as-promised": "^7.1.1",
     "eslint": "^7.19.0",
     "eslint-config-airbnb-base": "^14.2.1",
     "eslint-config-prettier": "^7.2.0",
     "eslint-plugin-import": "^2.22.1",
     "husky": "^4.3.8",
     "lint-staged": "^10.5.4",
-    "prettier": "^2.2.1"
+    "mocha": "^8.3.0",
+    "mock-fs": "^4.13.0",
+    "nock": "^13.0.10",
+    "prettier": "^2.2.1",
+    "testdouble": "^3.16.1"
   },
   "husky": {
     "hooks": {
