@@ -16,6 +16,7 @@ jobs:
           node-version: '14.x'
           registry-url: 'https://registry.npmjs.org'
       - run: yarn install
+      - run: yarn add -D codecov
       - run: yarn test-ci
         env:
           CODECOV_TOKEN: ${{ secrets.CODECOV_TOKEN }}
