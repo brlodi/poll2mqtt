@@ -17,7 +17,9 @@
     "start-debug": "LOG_LEVEL=debug yarn start",
     "lint": "eslint **/*.js",
     "test": "NODE_ENV=test mocha --loader=testdouble",
-    "coverage": "c8 yarn test"
+    "test-ci": "yarn coverage && yarn codecov-upload",
+    "coverage": "c8 yarn test",
+    "codecov-upload": "c8 report --reporter=text-lcov > coverage/tests.lcov && codecov"
   },
   "dependencies": {
     "async-mqtt": "^2.6.1",
