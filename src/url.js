@@ -1,4 +1,4 @@
-import { merge, pickBy } from 'lodash-es';
+import { isString, merge, pickBy } from 'lodash-es';
 
 function testRegex(regex) {
   return regex.test.bind(regex);
@@ -16,7 +16,10 @@ function normalizeTrailingSlash(path) {
   return endsWithSlash(path) || endsWithFilePath(path) ? path : `${path}/`;
 }
 
-export function mergeUrls(...urls) {
+export function mergeUrls(...args) {
+  if (!args) throw new TypeError();
+
+  const urls = args.filter(isString);
   if (!urls || urls.length < 1) throw new TypeError();
   if (urls.some(isProtocolRelUrl)) throw new TypeError();
   if (urls.length > 2) return mergeUrls(urls[0], mergeUrls(...urls.slice(1)));
