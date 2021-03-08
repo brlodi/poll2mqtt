@@ -139,6 +139,18 @@ describe('url', function () {
         ).to.equal('http://example.net/');
       });
     });
+
+    it('discards `undefined` parameters', function () {
+      expect(mergeUrls('http://example.com', undefined)).to.equal(
+        'http://example.com/'
+      );
+      expect(mergeUrls('http://example.com', '/foo', undefined)).to.equal(
+        'http://example.com/foo/'
+      );
+      expect(
+        mergeUrls('http://example.com/foo', undefined, 'bar.png', undefined)
+      ).to.equal('http://example.com/foo/bar.png');
+    });
   });
 
   describe('mergeQueryParams()', function () {
